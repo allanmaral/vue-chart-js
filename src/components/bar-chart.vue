@@ -1,5 +1,5 @@
 <template>
-  <canvas></canvas>
+  <canvas />
 </template>
 
 <script>
@@ -18,18 +18,38 @@ import Chart from "chart.js";
  * @param {Array<GraphSerie>} series
  */
 const createDataset = (series) => {
+  // Retrive the primary color to be used as default
+  const defaultBgColor = getComputedStyle(
+    document.documentElement
+  ).getPropertyValue("--q-color-primary");
+  const defaultBorderColor = `${defaultBgColor}50`;
+
   return series.map((s) => ({
     label: s.name,
     data: s.values,
-    borderColor: s.color || "#027ae3",
-    backgroundColor: s.color ? `${s.color}50` : "#027ae360",
+    borderColor: s.color || defaultBgColor,
+    backgroundColor: s.color ? `${s.color}50` : defaultBorderColor,
     borderWidth: 1,
   }));
 };
 
 export default {
   name: "BarChart",
-  props: ["labels", "series", "options"],
+  props: {
+    labels: {
+      type: Array,
+      required: true,
+    },
+    series: {
+      type: Array,
+      required: true,
+    },
+    options: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       chart: null,
@@ -37,16 +57,14 @@ export default {
   },
   watch: {
     labels() {
-      console.log(this.labels);
-      this.refresh();
+      this.updateChart();
     },
     series() {
-      console.log(this.series);
-      this.refresh();
+      this.updateChart();
     },
   },
   methods: {
-    refresh() {
+    updateChart() {
       this.chart.data.labels = this.labels;
       this.chart.data.datasets = createDataset(this.series);
       this.chart.update();
@@ -70,26 +88,12 @@ export default {
             },
           ],
         },
+        ...this.options,
       },
     });
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
