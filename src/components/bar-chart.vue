@@ -44,10 +44,25 @@ export default {
       type: Array,
       required: true,
     },
-    options: {
-      type: Object,
+    horizontal: {
+      type: Boolean,
       required: false,
-      default: () => ({}),
+      default: false,
+    },
+    title: {
+      type: String,
+      rendered: false,
+      default: null,
+    },
+    xUnit: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    yUnit: {
+      type: String,
+      required: false,
+      default: "",
     },
   },
   data() {
@@ -62,6 +77,9 @@ export default {
     series() {
       this.updateChart();
     },
+    options() {
+      this.updateChart();
+    },
   },
   methods: {
     updateChart() {
@@ -72,18 +90,35 @@ export default {
   },
   mounted() {
     this.chart = new Chart(this.$el, {
-      type: "bar",
+      type: this.horizontal ? "horizontalBar" : "bar",
       data: {
         labels: this.labels,
         datasets: createDataset(this.series),
       },
       options: {
         responsive: true,
+        title: {
+          display: !!this.title,
+          text: this.title,
+        },
         scales: {
           yAxes: [
             {
               ticks: {
                 beginAtZero: true,
+                callback: (value) => {
+                  return `${value}${this.yUnit}`;
+                },
+              },
+            },
+          ],
+          xAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+                callback: (value) => {
+                  return `${value}${this.xUnit}`;
+                },
               },
             },
           ],

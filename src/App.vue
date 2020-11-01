@@ -3,9 +3,9 @@
     <div>
       <button @click="addData">Add data</button>
       <button @click="removeData">Remove data</button>
-      <button @click="randomize">Regenerate</button>
+      <button @click="randomize">Randomize Data</button>
     </div>
-    <bar-chart :labels="labels" :series="series" />
+    <bar-chart :labels="labels" :series="series" yUnit="%" title="teste" />
   </div>
 </template>
 
@@ -23,9 +23,18 @@ export default {
       labels: ["Dorime", "Interino", "Adapare", "Ameno", "Latire"],
       series: [
         {
-          name: "# por área",
+          name: "Lorem",
           color: "#027ae3",
-          values: [12, 19, 3, 5, 2],
+          values: Array(5)
+            .fill(0)
+            .map(() => Math.ceil(Math.random() * 20)),
+        },
+        {
+          name: "Ipsum",
+          color: "#007E7A",
+          values: Array(5)
+            .fill(0)
+            .map(() => Math.ceil(Math.random() * 20)),
         },
       ],
     };
@@ -59,7 +68,9 @@ export default {
     randomize() {
       this.series = this.series.map((s) => {
         const serie = { ...s };
-        serie.values = s.values.map(() => Math.floor(Math.random() * 20));
+        const values = s.values.map(() => Math.ceil(1 + Math.random() * 19));
+        const scale = 100 / values.reduce((sum, cur) => sum + cur, 0);
+        serie.values = values.map((v) => v * scale);
         return serie;
       });
     },
